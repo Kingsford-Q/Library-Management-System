@@ -5,6 +5,7 @@ from tkinter import messagebox
 from datetime import datetime, timedelta
 from tkinter import Toplevel
 import csv
+import os
 
 
 class Library_Management_System:
@@ -26,15 +27,16 @@ class Library_Management_System:
         self.root.state("zoomed")
         
                                                     #Setting the icon of the window
-                
-        icon_image = PhotoImage(file = "D:\\Documents\\Programming\\Tkinter\\Tkinter Project\\Project\\PL.png")
+                                                    
+        image_path = os.path.join(os.path.dirname(__file__), "Images", "PL.png")
+        icon_image = PhotoImage(file = image_path)
         self.root.iconphoto(True, icon_image) 
         
                     ##################################      HEADER SETUP     ###########################################
         
                                                     #setting the header and image
                                                     
-        HeadImage = ImageTk.PhotoImage(Image.open("D:\\Documents\\Programming\\Tkinter\\Tkinter Project\\Project\\PL.png"))
+        HeadImage = ImageTk.PhotoImage(Image.open(image_path))
         self.Label = Label(self.root, text = "Library Management System", image = HeadImage, fg = "#C50F10", font = ("Arial", 27, "bold"), compound = "left", relief = "groove", bd = 10, pady = 10)
         self.Label.pack(fill = 'x')
         
@@ -58,18 +60,26 @@ class Library_Management_System:
         DDate = StringVar()
         LRFine = StringVar()
         self.ListOfBooks = {}
+        
 
                                                                 #Functions  
+        def get_project_path(filename):
+            # Get the path of the current script and join it with the "project" folder and the filename
+            return os.path.join(os.path.dirname(__file__), filename)
+        
+        booklist_path = get_project_path("BookList.csv")
+        borrowed_books_path = get_project_path("Borrowed Books.csv")
                                                                       
         def LoadBooks():
-            with open("BookList.csv", mode='r', newline = '') as csvfile:
+            
+            with open(booklist_path, mode='r', newline = '') as csvfile:
                 reader = csv.reader(csvfile)
                 for row in reader:
                     self.ListOfBooks[row[0]] = row[1]
         LoadBooks()
 
         def SaveBooks(Title, Author, filename = "BookList.csv"):
-            with open(filename, mode='a', newline='') as file:
+            with open(booklist_path, mode='a', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerow([Title, Author])
 
@@ -110,7 +120,7 @@ class Library_Management_System:
                         for col in Tree["columns"]:
                             Tree.column(col, anchor="center")
                             
-                        with open('Borrowed Books.csv', newline = '') as csvfile:
+                        with open(borrowed_books_path, newline = '') as csvfile:
                             reader = csv.reader(csvfile)
                             for row in reader:
                                 Tree.insert("", "end", values = row)
@@ -263,7 +273,7 @@ class Library_Management_System:
                                 DDate.get()
                             ]
                             
-                            with open('Borrowed Books.csv', mode='a', newline='') as file:
+                            with open(borrowed_books_path, mode='a', newline='') as file:
                                 writer = csv.writer(file)
                                 writer.writerow(DataEntries)
                             
@@ -332,7 +342,7 @@ class Library_Management_System:
                      
                 
                 def Updatecsv(AboutDeleting, filename = "BookList.csv"):
-                    with open(filename, newline = '') as csvfile:
+                    with open(booklist_path, newline = '') as csvfile:
                         reader = csv.reader(csvfile)
                         books = list(reader)
     
